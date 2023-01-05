@@ -13,7 +13,7 @@ pip install andersen-ev
 Alternatively install directly from this Github repo:
 
 ```
-pip install git+git@github.com:strobejb/andersen-ev.git
+pip install git+https://github.com/strobejb/andersen-ev
 ```
 
 ## Authentication

@@ -1,14 +1,14 @@
 from setuptools import setup
 
 setup(
-    name='andersen_ev',
+    name='andersen-ev',
     version='0.1.0',    
     description='Python package for controlling the Andersen A2 EV charger',
     url='https://github.com/strobejb/andersen-ev',
     author='James Brown',
     author_email='',    
     license='MIT',
-    packages=['andersen'],
+    packages=['andersen_ev'],
     install_requires=['pycognito',
                       'botocore',
                       'gql[all]',
