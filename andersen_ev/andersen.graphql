@@ -1,0 +1,452 @@
+query getSupportMessage {
+  getSupportMessage
+}
+
+query getCurrentUserDevices {
+  getCurrentUserDevices {
+    id
+    name
+    deviceInfo {
+      id
+      friendlyName
+    }
+    deviceStatus {
+      id
+      cfgCTConfig
+      sysFwVersion
+    }
+  }
+}
+
+query getDevice($id: ID!) {
+  getDevice(id: $id) {
+    id
+    name
+    last_ip_address
+    deviceStatus {
+      id
+      sysFwVersion
+      sysSchEnabled
+      sysSch0
+      sysSch1
+      sysSch2
+      sysSch3
+      sysSch4
+      cfgCTConfig
+      scheduleSlotsArray {
+        startHour
+        startMinute
+        endHour
+        endMinute
+        enabled
+        dayMap {
+          monday
+          tuesday
+          wednesday
+          thursday
+          friday
+          saturday
+          sunday
+        }
+      }
+    }
+    deviceInfo {
+      id
+      currency
+      enableThreePhaseMultiplier
+      friendlyName
+      locationLongitude
+      locationLatitude
+      schedule0Name
+      schedule1Name
+      schedule2Name
+      schedule3Name
+      schedule4Name
+      address
+      addressPlace
+      addressDistrict
+      addressPostcode
+      addressCountry
+      solarOverrideStart
+      notifyRcmErrorEnabled
+      notifyWeeklyReportEnabled
+      notifyDeviceOfflineEnabled
+      purpose
+      solarChargeAlways
+      timeZoneRegion
+      userLock
+    }
+  }
+}
+
+query getDeviceChargeRates($id: ID!) {
+  getDevice(id: $id) {
+    id
+    deviceChargeRates {
+      id
+      price
+      timeStartLocal
+      timeStopLocal
+      startDateTime
+      stopDateTime
+    }
+  }
+}
+
+query getDeviceLora($id: ID!) {
+  getDevice(id: $id) {
+    id
+    deviceInfo {
+      loraDevices
+    }
+  }
+}
+
+query getDeviceSolar($id: ID!) {
+  getDevice(id: $id) {
+    id
+    deviceInfo {
+      id
+      solarOverrideStart
+    }
+  }
+}
+
+query getCalculatedPowerLogsBinned(
+  $id: ID!
+  $dateFrom: Date
+  $dateTo: Date
+  $binnedMinutes: Int
+  $limit: Int
+  $offset: Int
+  $groupBy: LogsGroupedBy
+) {
+  getDevice(id: $id) {
+    id
+    deviceCalculatedPowerLogsBinned(
+      dateFrom: $dateFrom
+      dateTo: $dateTo
+      binnedMinutes: $binnedMinutes
+      groupBy: $groupBy
+      limit: $limit
+      offset: $offset
+    )
+  }
+}
+
+query searchAddress($addressFragment: String!, $countryCode: String) {
+  searchAddress(
+    addressFragment: $addressFragment
+    countryCode: $countryCode
+  ) {
+    summaryline
+    subbuildingname
+    buildingname
+    number
+    premise
+    street
+    posttown
+    county
+    postcode
+  }
+}
+
+query getDeviceCalculatedChargeLogs(
+  $id: ID!
+  $limit: Int
+  $offset: Int
+  $minEnergy: Float
+  $dateFrom: Date
+) {
+  getDevice(id: $id) {
+    id
+    deviceCalculatedChargeLogs(
+      limit: $limit
+      offset: $offset
+      minEnergy: $minEnergy
+      dateFrom: $dateFrom
+    ) {
+      chargeCostTotal
+      chargeEnergyTotal
+      deviceId
+      duration
+      gridCostTotal
+      gridEnergyTotal
+      particleFwVersion
+      solarEnergyTotal
+      solarCostTotal
+      startDateTimeLocal
+      surplusUsedCostTotal
+      surplusUsedEnergyTotal
+      uuid
+    }
+  }
+}
+
+mutation updateChargeRate(
+  $id: ID!
+  $startDateTime: Date
+  $stopDateTime: Date
+  $dayMon: Boolean
+  $dayTue: Boolean
+  $dayWed: Boolean
+  $dayThu: Boolean
+  $dayFri: Boolean
+  $daySat: Boolean
+  $daySun: Boolean
+  $timeStartLocal: String
+  $timeStopLocal: String
+  $price: Float!
+) {
+  updateChargeRate(
+    id: $id
+    startDateTime: $startDateTime
+    stopDateTime: $stopDateTime
+    dayMon: $dayMon
+    dayTue: $dayTue
+    dayWed: $dayWed
+    dayThu: $dayThu
+    dayFri: $dayFri
+    daySat: $daySat
+    daySun: $daySun
+    timeStartLocal: $timeStartLocal
+    timeStopLocal: $timeStopLocal
+    price: $price
+  )
+}
+
+mutation setScheduleNames(
+  $deviceId: ID!
+  $schedule0Name: String
+  $schedule1Name: String
+  $schedule2Name: String
+  $schedule3Name: String
+  $schedule4Name: String
+) {
+  upsertDeviceInfo(
+    deviceId: $deviceId
+    schedule0Name: $schedule0Name
+    schedule1Name: $schedule1Name
+    schedule2Name: $schedule2Name
+    schedule3Name: $schedule3Name
+    schedule4Name: $schedule4Name
+  ) {
+    schedule0Name
+    schedule1Name
+    schedule2Name
+    schedule3Name
+    schedule4Name
+  }
+}
+
+mutation createChargeRate(
+  $deviceId: ID!
+  $startDateTime: Date
+  $stopDateTime: Date
+  $dayMon: Boolean
+  $dayTue: Boolean
+  $dayWed: Boolean
+  $dayThu: Boolean
+  $dayFri: Boolean
+  $daySat: Boolean
+  $daySun: Boolean
+  $timeStartLocal: String
+  $timeStopLocal: String
+  $price: Float!
+) {
+  createChargeRate(
+    deviceId: $deviceId
+    startDateTime: $startDateTime
+    stopDateTime: $stopDateTime
+    dayMon: $dayMon
+    dayTue: $dayTue
+    dayWed: $dayWed
+    dayThu: $dayThu
+    dayFri: $dayFri
+    daySat: $daySat
+    daySun: $daySun
+    timeStartLocal: $timeStartLocal
+    timeStopLocal: $timeStopLocal
+    price: $price
+  ) {
+    id
+  }
+}
+
+mutation unclaimDevice($deviceId: ID!) {
+    unclaimDevice(deviceId: $deviceId)
+}
+
+mutation runAEVCommand(
+  $deviceId: ID!
+  $functionName: String!
+  $params: String
+) {
+  runAEVCommand(
+    deviceId: $deviceId
+    functionName: $functionName
+    params: $params
+  ) {
+    return_value
+  }
+}
+
+mutation upsertAccount($firstName: String, $lastName: String) {
+  upsertAccount(firstName: $firstName, lastName: $lastName)
+}
+
+mutation setSchedules($deviceId: ID!, $scheduleSlots: ScheduleSlotsInput!) {
+  setSchedules(deviceId: $deviceId, scheduleSlots: $scheduleSlots) {
+    id
+    name
+    last_app
+    connected
+    return_value
+  }
+}
+
+
+mutation deleteChargeRate($id: ID!) {
+  deleteChargeRate(id: $id)
+}
+
+mutation upsertDeviceFriendlyName($deviceId: ID!, $friendlyName: String) {
+  upsertDeviceInfo(deviceId: $deviceId, friendlyName: $friendlyName) {
+    friendlyName
+  }
+}
+
+query getSolar(
+  $deviceId: ID!
+) {
+  getSolar(
+    deviceId: $deviceId
+  ) {
+    deviceId
+    override
+    chargeAlways
+    maxGridChargePercent
+    return_value
+  }
+}
+
+mutation setSolar(
+  $deviceId: ID!
+  $override: Boolean
+  $chargeAlways: Boolean
+  $maxGridChargePercent: Int
+) {
+  setSolar(
+    deviceId: $deviceId
+    override: $override
+    chargeAlways: $chargeAlways
+    maxGridChargePercent: $maxGridChargePercent
+  ) {
+    return_value
+  }
+}
+
+mutation registerMobileDevice($token: String!) {
+  registerMobileDevice(token: $token)
+}
+
+mutation unregisterMobileDevice($token: String!) {
+  unregisterMobileDevice(token: $token)
+}
+
+mutation setAllSchedulesDisabled($deviceId: ID!) {
+  setAllSchedulesDisabled(deviceId: $deviceId) {
+    id
+    name
+    last_app
+    connected
+    return_value
+  }
+}
+
+mutation claimDeviceByName($deviceName: String!) {
+  claimDeviceByName(deviceName: $deviceName) {
+    id
+    name
+  }
+}
+
+subscription deviceStatusUpdated($id: ID!) {
+  deviceStatusUpdated(id: $id) {
+    id
+    sysFwVersion
+    evseState
+    online
+    sysRssi
+    sysSSID
+    lastEvent
+    lastEventAge
+    cfgLora0 {
+      cfg
+      epow
+      on
+      rssi
+      eui
+    }
+    cfgLora1 {
+      cfg
+      epow
+      on
+      rssi
+      eui
+    }
+    cfgLora2 {
+      cfg
+      epow
+      on
+      rssi
+      eui
+    }
+    cfgLora3 {
+      cfg
+      epow
+      on
+      rssi
+      eui
+    }
+    sysTime
+    sysSch0
+    sysSch1
+    sysSch2
+    sysSch3
+    sysSch4
+    sysFaultCode
+    sysSchEnabled
+    sysUserLock
+    sysScheduleLock
+    sysSolarPower
+    sysGridPower
+    solarMaxGridChargePercent
+    solarChargeAlways
+    solarOverride
+    cfgCTConfig
+    chargeStatus {
+      start
+      chargeEnergyTotal
+      chargePower
+      duration
+    }
+    scheduleSlotsArray {
+      startHour
+      startMinute
+      endHour
+      endMinute
+      enabled
+      dayMap {
+        monday
+        tuesday
+        wednesday
+        thursday
+        friday
+        saturday
+        sunday
+      }
+    }
+    sysSchDSORandom
+  }
+}
