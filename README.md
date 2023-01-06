@@ -120,28 +120,43 @@ for result in a2.subscribe_device_updates(deviceId):
   print(j)
 ``` 
 
-The results of these notifications contain slightly more information than just querying (polling) the API directly. Specifically, the result includes the current charging status (power level, etc) and can be used to replicate what the Konnect app displays.
+The results of these notifications contain slightly more information than just querying (polling) the API directly. Specifically, the result includes the current charging status (power level, etc) and can be used to replicate what the Konnect app displays. There are lots of values - just run the `examples/konnect-status.py` sample to see it in action.
 
 Useful fields seem to be:
+
 |Field|Description|
 |---|---|
 |`sysSchEnabled`|True when a schedule is active|
 |`sysUserLock`|True then the device is locked (False when unlocked)|
 |`chargePower`|The current charge level|
-|`evseState`|255 for ready, 1 (device locked), 3 (connected) |
+|`evseState`|device status / locked / charging |
 
-There are lots of other values - just run the `examples/konnect-updates.py` sample, or look inside `andersen_ev/andersen.graphql` to see them all.
+Values for `evseState` are defined below. These appear to be the same values as
+defined in the OpenEVSE specification.
 
-There doesn't seem to be any way to determine if a charger is physically connected - only that the device is drawing power, which can be used to infer that a vehicle is connected and charging.   
+|EVSE State|Description|
+|---|---|
+|`1`| Ready (disconnected) |
+|`2`| Connected |
+|`3`| Charging |
+|`4`| Error |
+|`254`| Sleeping |
+|`255`| Disabled (locked via user or schedule) |
+
+There doesn't seem to be a reliable way to determine if a charger is physically connected, but not drawing power because of another reason. For example, if the charger is disabled because of a timed schedule, or locked by the user, the EVSE state always appears as `255` (disabled). Only when the device is unlocked and there is no schedule enabled, will `evseState` reflect the connected/charging status.
+
+I've also never observed the Andersen charger reporting the EVSE state as `254` (sleeping) which could be inferred as 'disabled due to a schedule'. These limitations are potentially bug which could be rectified by future firmware update by Andersen.
+
+### Example device status 
 
 ```python
 {
   "deviceStatusUpdated": {
     "id": "....",
-    "evseState": 255,         # 255=ready, 1=locked
-    "online": true,
-    "sysRssi": -69,
-    "sysSSID": "WIFI SSID",
+    "evseState": 255,         # 1=ready, 2=connected, 3=charging, 255=locked
+    "online": true,           # Connected to cloud
+    "sysRssi": -69,           # Wifi signal strength
+    "sysSSID": "SSID HERE",   # SSID   
     "sysSchEnabled": True,    # True when a schedule is active
     "sysUserLock": False,     # Is device Locked
     "sysScheduleLock": True,  # True when schedule is active
@@ -157,6 +172,9 @@ There doesn't seem to be any way to determine if a charger is physically connect
       "chargePower": 0,      # current charge level
       "duration": 8472
     },
+    "scheduleSlotsArray": [  # array of schedule slots
+    ],
+    "sysSchDSORandom": null  
 }
 
 ```

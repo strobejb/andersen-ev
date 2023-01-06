@@ -28,7 +28,11 @@ for result in a2.subscribe_device_updates(deviceId):
   status = json.dumps(result, indent=2)
   print(status)
 
-  print(f"Charge Level:    {result['deviceStatusUpdated']['chargeStatus']['chargePower']}")
-  print(f"Locked:          {result['deviceStatusUpdated']['sysUserLock']}")
-  print(f"Schedule Active: {result['deviceStatusUpdated']['sysSchEnabled']}")
+  deviceStatus = result['deviceStatusUpdated']
+
+  print(f"Charge Level:     {deviceStatus['chargeStatus']['chargePower']}")
+  print(f"User Locked:      {deviceStatus['sysUserLock']}")
+  print(f"Schedule Enabled: {deviceStatus['sysSchEnabled']}")
+  print(f"Schedule Locked:  {deviceStatus['sysScheduleLock']}")
+  print(f"EVSE State:       {deviceStatus['evseState']}")
 
