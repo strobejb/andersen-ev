@@ -9,6 +9,7 @@ setup(
     author_email='',    
     license='MIT',
     packages=['andersen_ev'],
+    include_package_data=True,
     install_requires=['pycognito',
                       'botocore',
                       'gql[all]',
