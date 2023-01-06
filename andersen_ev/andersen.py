@@ -19,7 +19,7 @@ class AndersenA2:
         self.wsclient = None
 
         # load the graphql schema as a DocumentNode
-        spath = os.path.join(os.path.dirname(__file__), "andersen.graphql")
+        spath = os.path.join(os.path.dirname(__file__), "schema/andersen.graphql")
         schema = open(spath, 'r').read()        
         self._docnode = parse(Source(schema), "GraphQL request")
     
@@ -70,7 +70,7 @@ class AndersenA2:
 
         return self.id_token
 
-    def confirm_device( self, deviceName):
+    def confirm_device(self, deviceName):
         raise NotImplementedError
         #self.gqclient.confirm_device(deviceName) 
         pass
@@ -147,11 +147,11 @@ class AndersenA2:
 
     def user_lock(self, deviceId):
         # disables charging
-        return run_aev_command(deviceId, "userLock")
+        return self.run_aev_command(deviceId, "userLock")
 
     def user_unlock(self, deviceId):
         # enables charging
-        return run_aev_command(deviceId, "userUnlock")
+        return self.run_aev_command(deviceId, "userUnlock")
 
     def upsert_account(self, firstName, lastName):
         return self._execute_query("upsertAccount", 

@@ -3,9 +3,9 @@
   Andersen device status events
 """  
 
-# append the path of the parent directory 
+# prepend the path of the parent directory 
 import sys  
-sys.path.append("..")
+sys.path.insert(0, "..")
 
 # example client starts here
 from andersen_ev import AndersenA2
