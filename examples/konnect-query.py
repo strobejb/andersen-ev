@@ -1,12 +1,11 @@
+# prepend the path of the parent directory. only needed for testing
+# within this repo - remove these lines for your own projects 
+import sys; sys.path.insert(0, "..")
+
 """ 
   Example python client to Authenticate with the AndersenEV cloud API
+  and exercise various queries 
 """  
-
-# prepend the path of the parent directory.  
-import sys  
-sys.path.insert(0, "..")
-
-# example client starts here
 from andersen_ev import AndersenA2
 
 import json

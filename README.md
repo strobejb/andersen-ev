@@ -22,7 +22,6 @@ Register your mobile phone with the Andersen charger (if not already done), usin
 
 ```python
 from andersen_ev import AndersenA2
-import json
 
 a2 = AndersenA2()
 a2.authenticate(email=EMAIL, password=PASSWORD)
@@ -114,6 +113,8 @@ It is possible to subscribe to device status updates. Websockets are used to rec
 from the Andersen cloud service:
 
 ```python
+import json
+
 for result in a2.subscribe_device_updates(deviceId):
   j = json.dumps(result, indent=2)
   print(j)
@@ -137,7 +138,7 @@ There doesn't seem to be any way to determine if a charger is physically connect
 {
   "deviceStatusUpdated": {
     "id": "....",
-    "evseState": 255,     # 255=ready, 1=locked
+    "evseState": 255,         # 255=ready, 1=locked
     "online": true,
     "sysRssi": -69,
     "sysSSID": "WIFI SSID",
