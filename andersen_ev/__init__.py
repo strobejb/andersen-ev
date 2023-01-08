@@ -11,3 +11,4 @@ __author__ = 'James Brown'
 __credits__ = 'Catch22'
 
 from .andersen import AndersenA2
+from .auth import AndersenAuth

@@ -25,6 +25,7 @@ query getDevice($id: ID!) {
     last_ip_address
     deviceStatus {
       id
+      evseState
       sysFwVersion
       sysSchEnabled
       sysSch0

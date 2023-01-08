@@ -1,9 +1,14 @@
 from setuptools import setup
 
+with open('README.md') as f:
+    long_description = f.read()
+
 setup(
     name='andersen-ev',
-    version='0.1.0',    
+    version='0.1.1',    
     description='Python package for controlling the Andersen A2 EV charger',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/strobejb/andersen-ev',
     author='James Brown',
     author_email='',    

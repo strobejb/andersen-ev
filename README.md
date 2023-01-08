@@ -1,8 +1,8 @@
 # Andersen-EV 
 
-Python package to enable control of the Andersen A2 EV charger. This library provides a client-side interface to the cloud API used by the Andersen Konnect+ mobile app.
+Python package to enable control of the Andersen A2 EV charger. This library provides a client-side interface to the same cloud API used by the Andersen Konnect+ mobile app. 
 
-The underlying Andersen API is implemented using GraphQL. 
+The Anderen charger cannot currently be controlled directly, but this package API can potentially be used to replicate, or even replace the Konnect+ app.
 
 ## Installation
 
@@ -18,7 +18,7 @@ pip install git+https://github.com/strobejb/andersen-ev
 
 ## Authentication
 
-Register your mobile phone with the Andersen charger (if not already done), using the Konnect+ app as normal. The email address and password used to register with Andersen must be used with the python client to authenticate with the cloud API. User credentials should be protected and not hard-coded into scripts or source-control:
+Register your mobile phone with the Andersen Konnect+ app as normal. The email address and password used to register with Andersen are also used by the python client to authenticate with the cloud API. User credentials should be protected and never hard-coded into scripts or source-control:
 
 ```python
 from andersen_ev import AndersenA2
@@ -27,15 +27,14 @@ a2 = AndersenA2()
 a2.authenticate(email=EMAIL, password=PASSWORD)
 ```
 
-Now that the python client is authenticated, the Andersen API service can be accessed. The API is based on GraphQL and returns JSON structures for all queries. The python library converts all return values into python dictionaries.
+Now that the python client is authenticated, the Andersen API service can be accessed. The underlying API is based on GraphQL and returns JSON structures for all queries. The python library converts all return values into python dictionaries.
 
 Device confirmation is not implemented yet, but will be soon. When this feature arrives, it will be possible to authenticate with an access token, meaning the password does not need to be persisted. 
 
 ## Basic Usage
 ### Retrieve device ID 
 
-Most functions require the 'device ID' of your Andersen charger. This ID
-can be found using the `get_current_user_devices` function:
+This is the first step to perform after authentication. Most functions will require the 'device ID' of your Andersen charger. This ID can be found using the `get_current_user_devices` function:
 
 ```python
 devices = a2.get_current_user_devices()
@@ -43,7 +42,7 @@ deviceId = devices[0]['id']
 ```
 
 The example above retrieves the ID of the first device (charger) registered with the account.
-If you have more than one EV charger, then you will need to need to search by the name or ID of the device, or use the `device_id_from_name` helper function:
+If you have more than one EV charger, then you will need to search by the name or ID of the device, or just use the `device_id_from_name` helper function:
 
 ```python
 deviceId = a2.device_id_from_name('Charger Name Here')
@@ -56,7 +55,7 @@ Scheduled charging can be resumed by enabling a specific schedule. The 'slot num
 ```python
 a2.enable_schedule(deviceId, 0)
 ```
-If the charger is locked, you would also want to unlock it at the same time to allow the schedule to take affect:
+If the charger is locked, you might also want to unlock it at the same time to allow the schedule to take affect.
 
 ### Disable scheduled charging
 
@@ -93,7 +92,7 @@ a2.create_schedule(deviceId, 0, schedule)
 
 ### Lock the charger
 
-Andersen chargers can be locked so that connected vehicles will not charge, and any scheduled charge events will not cause the vehicle to charge.
+Andersen chargers can be 'user locked' so that connected vehicles will not charge, and any scheduled charge events will also prevent the vehicle to charge.
 
 ```python
 a2.user_lock(deviceId)
@@ -136,16 +135,16 @@ defined in the OpenEVSE specification.
 
 |EVSE State|Description|
 |---|---|
-|`1`| Ready (disconnected) |
-|`2`| Connected |
-|`3`| Charging |
-|`4`| Error |
-|`254`| Sleeping |
-|`255`| Disabled (locked via user or schedule) |
+|1| Ready (disconnected) |
+|2| Connected |
+|3| Charging |
+|4| Error |
+|254| Sleeping |
+|255| Disabled (locked via user or schedule) |
 
-There doesn't seem to be a reliable way to determine if a charger is physically connected, but not drawing power because of another reason. For example, if the charger is disabled because of a timed schedule, or locked by the user, the EVSE state always appears as `255` (disabled). Only when the device is unlocked and there is no schedule enabled, will `evseState` reflect the connected/charging status.
+There doesn't seem to be a reliable way to determine if a charger is physically connected, but not drawing power because of another reason. For example, if the charger is disabled because of a timed schedule, or locked by the user, the EVSE state always appears as 255 (disabled). Only when the device is unlocked and there is no schedule enabled, will `evseState` reflect the connected/charging status.
 
-I've also never observed the Andersen charger reporting the EVSE state as `254` (sleeping) which could be inferred as 'disabled due to a schedule'. These limitations are potentially bug which could be rectified by future firmware update by Andersen.
+I've also never observed the Andersen charger reporting the EVSE state as 254 (sleeping) which could be inferred as 'disabled due to a schedule'. These limitations are potentially bug which could be rectified by future firmware update by Andersen.
 
 ### Example device status 
 
@@ -185,7 +184,7 @@ There are two examples that demonstate some of the functionality of the API:
 * `examples/konnect-query.py` demonstrates how to lock & unlock, and enable charging schedules.
 * `examples/konnect-status.py` is a basic example to demonstrate how to subscribe to device update events. 
 
-Both exmples need your credentials to run. Create file called `examples/config.cfg` and put your email and password in this file:
+Both examples need your credentials to run. Create a file called `examples/config.cfg` and provide your email and password in this file:
 
 ```ini
 [KONNECT]
