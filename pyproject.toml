@@ -12,10 +12,6 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-#[project.readme]
-#file = "README.md"
-#content-type = "text/markdown"
-
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
@@ -25,15 +21,14 @@ version = {attr = "andersen_ev.__version__"}
 dependencies = {file = ["src/andersen_ev/requirements.txt"]}
 
 [tool.setuptools]
-package-dir = {"" = "src"}
 include-package-data = true
+package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
-namespaces = false
 
-[tool.setuptools.package-data]
-myModule = ["*.graphql"]
+[tool.setuptools.exclude-package-data]
+"andersen_ev.schema" = ["test*"]
 
 [project.urls]
 "Homepage" = "https://github.com/strobejb/andersen-ev"
