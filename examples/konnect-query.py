@@ -1,6 +1,6 @@
-# prepend the path of the parent directory. only needed for testing
+# prepend the path of the src directory. only needed for testing
 # within this repo - remove these lines for your own projects 
-import sys; sys.path.insert(0, "..")
+import sys; sys.path.insert(0, "../src")
 
 """ 
   Example python client to Authenticate with the AndersenEV cloud API

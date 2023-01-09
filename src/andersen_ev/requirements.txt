@@ -1,0 +1,3 @@
+pycognito
+botocore
+gql[all]

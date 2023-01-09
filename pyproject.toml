@@ -1,0 +1,40 @@
+[project]
+name = "andersen_ev"
+license = {text = "MIT"}
+description = "Python package for controlling the Andersen A2 EV charger"
+dynamic=["version", "dependencies"]
+readme="README.md"
+authors = [ { name="James Brown" }]
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+#[project.readme]
+#file = "README.md"
+#content-type = "text/markdown"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = {attr = "andersen_ev.__version__"}
+dependencies = {file = ["src/andersen_ev/requirements.txt"]}
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+[tool.setuptools.package-data]
+myModule = ["*.graphql"]
+
+[project.urls]
+"Homepage" = "https://github.com/strobejb/andersen-ev"
+"Bug Tracker" = "https://github.com/strobejb/andersen-ev/issues"
