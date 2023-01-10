@@ -1,8 +1,7 @@
 # Andersen-EV 
 
-Python package to enable control of the Andersen A2 EV charger. This library provides a client-side interface to the same cloud API used by the Andersen Konnect+ mobile app. 
+Python package to enable control of the Andersen A2 EV charger. The library routes commands to the charger via Andersen's cloud API. So whilst the A2 cannot be controlled directly, this library could be used to replicate, or even replace the Konnect+ app.
 
-The Anderen charger cannot currently be controlled directly, but this package API can potentially be used to replicate, or even replace the Konnect+ app.
 
 ## Installation
 
@@ -10,7 +9,7 @@ The Anderen charger cannot currently be controlled directly, but this package AP
 pip install andersen-ev
 ```
 
-Alternatively install directly from this Github repo:
+Alternatively, install directly from this Github repo:
 
 ```
 pip install git+https://github.com/strobejb/andersen-ev
@@ -18,7 +17,7 @@ pip install git+https://github.com/strobejb/andersen-ev
 
 ## Authentication
 
-Register your mobile phone with the Andersen Konnect+ app as normal. The email address and password used to register with Andersen are also used by the python client to authenticate with the cloud API. User credentials should be protected and never hard-coded into scripts or source-control:
+Register your mobile phone with the Andersen Konnect+ app as normal. The email address and password used to register with Andersen are also needed by the python client to authenticate with the cloud API. User credentials should be protected and never hard-coded into scripts or source-control:
 
 ```python
 from andersen_ev import AndersenA2
@@ -27,21 +26,22 @@ a2 = AndersenA2()
 a2.authenticate(email=EMAIL, password=PASSWORD)
 ```
 
-Now that the python client is authenticated, the Andersen API service can be accessed. The underlying API is based on GraphQL and returns JSON structures for all queries. The python library converts all return values into python dictionaries.
-
 Device confirmation is not implemented yet, but will be soon. When this feature arrives, it will be possible to authenticate with an access token, meaning the password does not need to be persisted. 
 
 ## Basic Usage
+
+Now that the python client is authenticated, the Andersen APIs be accessed. Andersen's API is based on GraphQL and returns JSON structures for all queries. This python library acts as a simple wrapper that performs the necessary GraphQL queries, and converts all return values into python dictionaries.
+
 ### Retrieve device ID 
 
-This is the first step to perform after authentication. Most functions will require the 'device ID' of your Andersen charger. This ID can be found using the `get_current_user_devices` function:
+This is the first step needed after authentication. Most functions exposed by this library will require the 'device ID' of your Andersen charger. This ID can be found using the `get_current_user_devices` function:
 
 ```python
 devices = a2.get_current_user_devices()
 deviceId = devices[0]['id']
 ```
 
-The example above retrieves the ID of the first device (charger) registered with the account.
+The example above retrieves the ID of the first device (charger) registered with your account.
 If you have more than one EV charger, then you will need to search by the name or ID of the device, or just use the `device_id_from_name` helper function:
 
 ```python
@@ -59,7 +59,7 @@ If the charger is locked, you might also want to unlock it at the same time to a
 
 ### Disable scheduled charging
 
-The charger will most likely be running off an overnight schedule. The Konnect+ app lets you cancel the schedules, and a connected vehicle wil start charging:
+The charger will most likely be running off an overnight schedule. The Konnect+ app lets you cancel the schedules, allowing any connected vehicle to start charging:
 
 ```python
 a2.set_all_schedules_disabled(deviceId)
@@ -68,7 +68,7 @@ The command above disables all schedules and puts the charger into 'ready' (unlo
 
 ### Define a new schedule
 
-A new schedule can be created by providing the schedule data (start & end time, and days applicable to). The slot number (0-4) needs to be specified separately:
+A new schedule can be created by providing the schedule data (start & end time, and days applicable to). The slot number (0-4) needs to be specified separately as the 2nd parameter to the function:
 
 ```python
 schedule = {
@@ -108,8 +108,7 @@ a2.user_unlock(deviceId)
 
 ### Receive device status updates
 
-It is possible to subscribe to device status updates. Websockets are used to receive notifications
-from the Andersen cloud service:
+It is possible to subscribe to device status updates sent by the cloud service, providing near-realtime information about what the charger is doing (what state it is in), and how much power is being used for charging connected vehicles. 
 
 ```python
 import json
@@ -119,19 +118,20 @@ for result in a2.subscribe_device_updates(deviceId):
   print(j)
 ``` 
 
-The results of these notifications contain slightly more information than just querying (polling) the API directly. Specifically, the result includes the current charging status (power level, etc) and can be used to replicate what the Konnect app displays. There are lots of values - just run the `examples/konnect-status.py` sample to see it in action.
+The results of these notifications contain slightly more information than just querying (polling) the API directly. Specifically, the result includes the current charging status (power level, etc) and can be used to replicate what the Konnect+ app displays. There are lots of values available- just run the `examples/konnect-status.py` sample to see it in action.
 
 Useful fields seem to be:
 
 |Field|Description|
 |---|---|
-|`sysSchEnabled`|True when a schedule is active|
-|`sysUserLock`|True then the device is locked (False when unlocked)|
+|`sysSchEnabled`|True when a schedule is enabled|
+|`sysSchLocked`|True when the device is locked due to a schedule|
+|`sysUserLock`|True then the device is user-locked (False when unlocked)|
 |`chargePower`|The current charge level|
 |`evseState`|device status / locked / charging |
 
 Values for `evseState` are defined below. These appear to be the same values as
-defined in the OpenEVSE specification.
+defined by the OpenEVSE specification.
 
 |EVSE State|Description|
 |---|---|
@@ -140,11 +140,11 @@ defined in the OpenEVSE specification.
 |3| Charging |
 |4| Error |
 |254| Sleeping |
-|255| Disabled (locked via user or schedule) |
+|255| Disabled (locked by user, or schedule) |
 
-There doesn't seem to be a reliable way to determine if a charger is physically connected, but not drawing power because of another reason. For example, if the charger is disabled because of a timed schedule, or locked by the user, the EVSE state always appears as 255 (disabled). Only when the device is unlocked and there is no schedule enabled, will `evseState` reflect the connected/charging status.
+There doesn't seem to be a reliable way to determine if a charger is physically connected, but not drawing power because of another reason. For example, if the charger is disabled because of a timed schedule, or locked by the user, the EVSE state always appears as 255 (disabled) even when a vehicle is connected. Only when the device is unlocked and there is no schedule enabled, will `evseState` reflect the connected/charging status.
 
-I've also never observed the Andersen charger reporting the EVSE state as 254 (sleeping) which could be inferred as 'disabled due to a schedule'. These limitations are potentially bug which could be rectified by future firmware update by Andersen.
+I've also never observed the Andersen charger reporting the EVSE state as 254 (sleeping) which could be inferred as 'disabled due to a schedule'. These limitations are potentially a bug which could be rectified by future firmware update by Andersen.
 
 ### Example device status 
 
@@ -182,9 +182,9 @@ I've also never observed the Andersen charger reporting the EVSE state as 254 (s
 
 There are two examples that demonstate some of the functionality of the API:
 * `examples/konnect-query.py` demonstrates how to lock & unlock, and enable charging schedules.
-* `examples/konnect-status.py` is a basic example to demonstrate how to subscribe to device update events. 
+* `examples/konnect-status.py` is a basic example to demonstrate how to subscribe to device status events. 
 
-Both examples need your credentials to run. Create a file called `examples/config.cfg` and provide your email and password in this file:
+Both examples need your credentials to run. These can be provided by creating a file called `examples/config.cfg`, and speciying your email and password in as follows:
 
 ```ini
 [KONNECT]
