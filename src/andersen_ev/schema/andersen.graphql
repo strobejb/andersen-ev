@@ -28,6 +28,8 @@ query getDevice($id: ID!) {
       evseState
       sysFwVersion
       sysSchEnabled
+      sysUserLock
+      sysScheduleLock
       sysSch0
       sysSch1
       sysSch2
@@ -369,6 +371,19 @@ mutation claimDeviceByName($deviceName: String!) {
   claimDeviceByName(deviceName: $deviceName) {
     id
     name
+  }
+}
+
+query getDeviceStatusSimple($id: ID!) {
+  getDevice(id: $id) {
+    deviceStatus {
+      id
+      online
+      evseState
+      sysSchEnabled
+      sysUserLock
+      sysScheduleLock
+    }
   }
 }
 

@@ -18,7 +18,7 @@ a2.authenticate(email=config.EMAIL, password=config.PASSWORD)
 # Retrieve the first device registered in this account
 #
 devices = a2.get_current_user_devices()
-deviceId = devices['getCurrentUserDevices'][0]['id']
+deviceId = devices[0]['id']
 
 ##
 ## Subscribe to the device status updates, and sit 

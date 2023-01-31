@@ -7,6 +7,7 @@ from gql.transport.websockets import WebsocketsTransport
 
 # for file schema support
 from graphql import DocumentNode, Source, parse
+from graphql.utilities import get_operation_ast
 import os
 
 ANDERSEN_GRAPHQL_PROD = 'https://graphql.andersen-ev.com'
@@ -23,28 +24,46 @@ class AndersenA2:
         schema = open(spath, 'r').read()        
         self._docnode = parse(Source(schema), "GraphQL request")
     
+    def _get_query(self, name):
+      # search the DocumentNode for the query definition with the given name
+      # this is a bit of a bodge but it lets us nicely separate the code from the schema
+      # query = get_operation_ast(self._docnode, name)
+      query = next((d for d in self._docnode.definitions if d.name.value == name), None)      
+      return query
+
+    def _get_operation(self, query):
+      # find the operation name for the given query
+      qss = next((s for s in query.selection_set.selections if s.name.kind == 'name'), None)
+      return qss.name.value
+
     def _execute_query(self, name, variable_values = None):
 
       assert self.gqclient, "GraphQL client must be instantiated"
 
-      # search the DocumentNode for the query definition with the given name
-      # this is a bit of a bodge but it lets us nicely separate the code from the schema
-      query = next((d for d in self._docnode.definitions if d.name.value == name), None)
+      query  = self._get_query(name)
+      opname = self._get_operation(query)
 
-      return self.gqclient.execute(
+      result = self.gqclient.execute(
         query, 
         variable_values = variable_values
       )
+      try:
+        return result[opname]
+      except:
+        print(result)
+        raise
+        return None
 
     def _subscribe(self, name, variable_values = None):
       
       assert self.wsclient, "Websocket client must be instantiated"
+      query = self._get_query(name)
 
-      query = next((d for d in self._docnode.definitions if d.name.value == name), None)
       return self.wsclient.subscribe(
         query,
         variable_values = variable_values
       )
+
 
 
     def authenticate(self, email, password):
@@ -83,6 +102,9 @@ class AndersenA2:
 
     def get_device(self, deviceId):
         return self._execute_query("getDevice", variable_values={'id': deviceId})
+
+    def get_device_status(self, deviceId):
+        return self._execute_query("getDeviceStatusSimple", variable_values={'id':deviceId})
 
     def get_device_charge_rates(self, deviceId):
         return self._execute_query("getDeviceChargeRates", variable_values={'id': deviceId})
@@ -169,7 +191,7 @@ class AndersenA2:
 
     def get_schedule(self, deviceId, slotNumber):
       result = self.get_device(deviceId)
-      return result['getDevice']['deviceStatus']['scheduleSlotsArray'][slotNumber]
+      return result['deviceStatus']['scheduleSlotsArray'][slotNumber]
       
     def enable_schedule(self, deviceId, slotNumber, enabled=True):
       schedule = self.get_schedule(deviceId, slotNumber)
@@ -257,16 +279,14 @@ class AndersenA2:
           })         
 
     def device_by_name(self, name):
-      devices = self.get_current_user_devices()
-      for device in devices['getCurrentUserDevices']:
+      for device in self.get_current_user_devices():
         if device['deviceInfo']['friendlyName'] == name:
           return device
 
     def device_id_from_name(self, name):
       return self.device_by_name(name)['id']
 
-    def subscribe_device_updates(self, deviceId):
-        
+    def subscribe_device_updates(self, deviceId):        
       if not self.wsclient:
         transport = WebsocketsTransport(
             url=ANDERSEN_GRAPHQL_WS, 
@@ -278,4 +298,4 @@ class AndersenA2:
             fetch_schema_from_transport=False
         )
 
-      return  self._subscribe('deviceStatusUpdated', variable_values={'id': deviceId} )
+      return self._subscribe('deviceStatusUpdated', variable_values={'id': deviceId} )

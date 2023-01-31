@@ -15,6 +15,11 @@ Alternatively, install directly from this Github repo:
 pip install git+https://github.com/strobejb/andersen-ev
 ```
 
+### Known Limitations
+
+* Vehicle connection status cannot be reliably determined because this information is not available when the charger is in a locked/scheduled state. A workaround involves temporarily unlocking the charger, querying the EVSE connection state, and then re-enabling the schedules and/or user lock. See the `is-connected.py` example.
+* The library currently supports username & password-base authentication, but 'device confirmation' is not yet implemented. This feature of the AWS cognito service would enable token-based authentication, meaning that the user's password does not need to be persisted.
+
 ## Authentication
 
 Register your mobile phone with the Andersen Konnect+ app as normal. The email address and password used to register with Andersen are also needed by the python client to authenticate with the cloud API. User credentials should be protected and never hard-coded into scripts or source-control:

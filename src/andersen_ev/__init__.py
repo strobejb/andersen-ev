@@ -13,3 +13,4 @@ __credits__ = 'Catch22'
 from .andersen import AndersenA2
 from .auth     import AndersenAuth
 from .mobile   import AndersenMobile
+from .api   import AndersenRest
