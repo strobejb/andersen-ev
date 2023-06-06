@@ -103,8 +103,11 @@ class AndersenA2:
     def get_device(self, deviceId):
         return self._execute_query("getDevice", variable_values={'id': deviceId})
 
-    def get_device_status(self, deviceId):
+    def get_device_status_simple(self, deviceId):
         return self._execute_query("getDeviceStatusSimple", variable_values={'id':deviceId})
+
+    def get_device_status(self, deviceId):
+        return self._execute_query("getDeviceStatus", variable_values={'id':deviceId})
 
     def get_device_charge_rates(self, deviceId):
         return self._execute_query("getDeviceChargeRates", variable_values={'id': deviceId})

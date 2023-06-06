@@ -2,14 +2,15 @@
 
 Python package to enable control of the Andersen A2 EV charger. The library routes commands to the charger via Andersen's cloud API. So whilst the A2 cannot be controlled directly, this library could be used to replicate, or even replace the Konnect+ app.
 
-
 ## Installation
+
+Install from PiPy:
 
 ```
 pip install andersen-ev
 ```
 
-Alternatively, install directly from this Github repo:
+Alternatively, install directly from this Github repo to get latest version:
 
 ```
 pip install git+https://github.com/strobejb/andersen-ev
@@ -196,3 +197,9 @@ Both examples need your credentials to run. These can be provided by creating a 
 email=user@example.com
 password=...
 ```
+
+## Change List
+
+### v0.1.5
+* Breaking change. JSON return values from API are no longer wrapped by the function name. 
+* Return latest information available from API with `query_device_status` 

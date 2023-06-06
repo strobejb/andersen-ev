@@ -47,6 +47,10 @@ print(json.dumps(chargeRates, indent=2))
 deviceLora = a2.get_device_lora(deviceId)
 print(json.dumps(deviceLora, indent=2))
 
+# full device information
+deviceStatus = a2.get_device_status(deviceId)
+print(json.dumps(deviceStatus, indent=2))
+
 
 sys.exit(0)
 

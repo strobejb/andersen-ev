@@ -31,6 +31,7 @@ for result in a2.subscribe_device_updates(deviceId):
   deviceStatus = result['deviceStatusUpdated']
 
   print(f"Charge Level:     {deviceStatus['chargeStatus']['chargePower']}")
+  print(f"Charging Enabled: {deviceStatus['sysChargingEnabled']}")
   print(f"User Locked:      {deviceStatus['sysUserLock']}")
   print(f"Schedule Enabled: {deviceStatus['sysSchEnabled']}")
   print(f"Schedule Locked:  {deviceStatus['sysScheduleLock']}")
