@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "DeviceStatus",
+
+  "properties": {
+    "id": { "type": "string" },
+    "evseState": { "type": "integer" },
+    "sysUserLock": { "type": "boolean" },
+    "sysScheduleLock": { "type": "boolean" },
+    "sysSolarCT": { "type": "boolean" },
+    "sysGridCT": { "type": "boolean" },
+    "sysChargingEnabled": { "type": "boolean" },
+    "sysSchEnabled": { "type": "boolean" },
+    "cfgChargeAmpMin": { "type": "integer" },
+    "cfgChargeAmpMax": { "type": "integer" },
+    "chargeStatus": { "$ref": "ChargeStatus.json" }
+  },
+
+  "required": ["id", "evseState", "sysUserLock", "sysScheduleLock", 
+    "sysChargingEnabled", "sysSchEnabled", "chargeStatus"],
+  "additionalProperties": true
+}    

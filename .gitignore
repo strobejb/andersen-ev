@@ -1,5 +1,6 @@
 .vscode/
 __pycache__/
+.pytest_cache/
 venv/
 .pyc
 examples/config.cfg

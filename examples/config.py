@@ -1,5 +1,6 @@
 import configparser
 import sys
+import pathlib
 
 config = configparser.ConfigParser()
 
@@ -9,9 +10,10 @@ message = "Create this file in this directory with the following format:\n\n"\
   "password=example\n"
 
 try:
-  config.read_file(open('config.cfg', 'r'))
+  configpath = pathlib.Path(__file__).parent / 'config.cfg'
+  config.read_file(open(configpath, 'r'))
 except FileNotFoundError:
-  print("./config.cfg not found.")
+  print(f"{configpath} not found.")
   print(message)
   sys.exit(1)
 
@@ -19,6 +21,6 @@ try:
   EMAIL    = config['KONNECT']['email']
   PASSWORD = config['KONNECT']['password']
 except KeyError:
-  print("Missing credentials in ./config.cfg.\n")
+  print(f"Missing credentials in {configpath}\n")
   print(message)
   sys.exit(1)

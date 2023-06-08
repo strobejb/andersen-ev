@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "get_device_status",
+
+  "type": "object",
+  "properties": {
+    "deviceStatus": { "$ref": "DeviceStatusFull.json" }
+  },
+  
+  "required": ["deviceStatus"]    
+}
