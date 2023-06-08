@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "ChargeStatus",
+  
+  "properties": {
+    "start": { "type": "string" },
+    "chargeEnergyTotal": { "type": "number" },
+    "chargePowerMax": { "type": "number" },
+    "duration": { "type": "number" }
+  },
+  "required": ["start", "chargePowerMax", "chargeEnergyTotal", "duration"],
+  "additionalProperties": true
+}    
