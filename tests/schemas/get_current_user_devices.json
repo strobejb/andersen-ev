@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "get_current_user_devices",
+
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "name", "deviceInfo", "deviceStatus"],
+    "properties": {
+      "id": { "type": "string" },
+      "name": { "type": "string" },
+      "deviceInfo": { "$ref": "DeviceInfo.json" },
+      "deviceStatus": { "$ref": "DeviceStatus.json" }
+    }
+  }
+}
