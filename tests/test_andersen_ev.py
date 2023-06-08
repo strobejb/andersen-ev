@@ -2,6 +2,14 @@ import sys;
 sys.path.insert(0, "../src")      # A2 module
 sys.path.insert(0, "../examples") # config loader
 
+# force tests to run from tests/ directory
+import os
+import pathlib
+os.chdir(pathlib.Path(__file__).parent)
+
+##
+## TESTING STARTS HERE
+##
 from andersen_ev import AndersenA2
 
 import pytest
@@ -9,8 +17,6 @@ import json
 import jsonschema
 import config
 import jsonref
-import pathlib
-
 
 def load_json_schema(filename):
     """ Loads the given schema file """
