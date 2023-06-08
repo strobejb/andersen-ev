@@ -1,6 +1,6 @@
 import sys; 
-sys.path.insert(0, "../src")
-sys.path.insert(0, "../examples")
+sys.path.insert(0, "../src")      # A2 module
+sys.path.insert(0, "../examples") # config loader
 
 from andersen_ev import AndersenA2
 
