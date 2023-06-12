@@ -1,0 +1,43 @@
+name: Upload Python Package (TEST)
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build
+        
+    - name: Extract version from tag
+      shell: bash
+      run: echo "version=${{github.ref_name}}" | cut -d "v" -f 2 >> $GITHUB_OUTPUT
+      
+    - name: Update module version with tag
+      shell: bash
+      run: sed -i "s/{{VERSION_PLACEHOLDER}}/${{ steps.tag.outputs.VERSION }}/g" src/andersen_ev/__init__.py
+      
+    - name: Build package
+      run: python -m build
+      
+    - name: Publish package to PyPi
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/simple/
+        user: __token__
+        password: ${{ secrets.STROBEJB_PYPI_PUBLISH_TEST }}
