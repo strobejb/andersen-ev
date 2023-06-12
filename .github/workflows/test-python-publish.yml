@@ -31,7 +31,10 @@ jobs:
       
     - name: Update module version with tag
       shell: bash
-      run: sed -i "s/{{VERSION_PLACEHOLDER}}/${{ steps.extractversion.outputs.VERSION }}/g" src/andersen_ev/__init__.py
+      run: |
+        sed -i "s/{{VERSION_PLACEHOLDER}}/${{ steps.extractversion.outputs.VERSION }}/g" src/andersen_ev/__init__.py
+        git diff
+        cat src/andersen_ev/__init__.py
       
     - name: Build package
       run: python -m build
