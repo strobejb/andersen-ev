@@ -25,12 +25,13 @@ jobs:
         pip install build
         
     - name: Extract version from tag
+      id: extractversion
       shell: bash
       run: echo "version=${{github.ref_name}}" | cut -d "v" -f 2 >> $GITHUB_OUTPUT
       
     - name: Update module version with tag
       shell: bash
-      run: sed -i "s/{{VERSION_PLACEHOLDER}}/${{ steps.tag.outputs.VERSION }}/g" src/andersen_ev/__init__.py
+      run: sed -i "s/{{VERSION_PLACEHOLDER}}/${{ steps.extractversion.outputs.VERSION }}/g" src/andersen_ev/__init__.py
       
     - name: Build package
       run: python -m build
