@@ -1,0 +1,59 @@
+name: Release (TEST)
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'New tag name'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build
+        
+    - name: Extract version from tag
+      id: extractversion
+      shell: bash
+      run: echo "VERSION=$(echo ${{github.event.inputs.tag}} | cut -d "v" -f 2)" >> $GITHUB_OUTPUT
+      
+    - name: Update module version with tag
+      shell: bash
+      run: |
+        #sed -i "s/{{VERSION_PLACEHOLDER}}/${{ steps.extractversion.outputs.VERSION }}/g" src/andersen_ev/__init__.py
+        sed -i -E "s|__version__.*|__version__ = '$VERSION'|g" src/andersen_ev/__init__.py
+        git diff
+        cat src/andersen_ev/__init__.py
+      
+    - name: Build package
+      run: python -m build
+      
+    - name: Tag release
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add .
+        git commit -m "Update version: " {{ github.event.inputs.tag }}
+        git tag ${{ github.event.inputs.tag }}
+        git push
+      
+    - name: Publish package to PyPi (TEST)
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+        user: __token__
+        password: ${{ secrets.STROBEJB_PYPI_PUBLISH_TEST }}
