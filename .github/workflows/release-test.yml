@@ -49,7 +49,7 @@ jobs:
         git add .
         git commit -m "Update version: ${{ github.event.inputs.tag }}"
         git tag ${{ github.event.inputs.tag }}
-        git push && git push ${{ github.event.inputs.tag }}
+        git push && git push origin ${{ github.event.inputs.tag }}
         
     - name: Create release
       run: gh release create ${{ github.event.inputs.tag }} --verify-tag ./dist/*
