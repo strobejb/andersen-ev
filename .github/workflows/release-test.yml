@@ -35,7 +35,7 @@ jobs:
       shell: bash
       run: |
         #sed -i "s/{{VERSION_PLACEHOLDER}}/${{ steps.extractversion.outputs.VERSION }}/g" src/andersen_ev/__init__.py
-        sed -i -E "s|__version__.*|__version__ = '$VERSION'|g" src/andersen_ev/__init__.py
+        sed -i -E "s|__version__.*|__version__ = '${{steps.extractversion.outputs.VERSION}}'|g" src/andersen_ev/__init__.py
         git diff
         cat src/andersen_ev/__init__.py
       
