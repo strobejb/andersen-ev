@@ -50,6 +50,11 @@ jobs:
         git commit -m "Update version: ${{ github.event.inputs.tag }}"
         git tag ${{ github.event.inputs.tag }}
         git push
+        
+    - name: Create release
+      run: gh release create ${{ github.event.inputs.tag }} --verify-tag ./dist/*
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
       
     - name: Publish package to PyPi (TEST)
       uses: pypa/gh-action-pypi-publish@release/v1
